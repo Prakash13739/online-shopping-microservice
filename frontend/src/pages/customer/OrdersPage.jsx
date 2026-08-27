@@ -4,19 +4,14 @@ import { Package, ArrowRight, Calendar, ChevronRight, ShoppingBag } from 'lucide
 import { orderApi } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 import StatusBadge from '../../components/StatusBadge';
+import { formatINR } from '../../utils/currency';
 
 export default function OrdersPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
+
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -124,7 +119,7 @@ export default function OrdersPage() {
 
                 <div className="text-right sm:border-l sm:border-white/10 sm:pl-6 flex-shrink-0">
                   <span className="text-xs text-slate-400 block font-semibold">Total Paid</span>
-                  <span className="text-xl font-black gradient-text">{formatCurrency(order.grandTotal || 0)}</span>
+                  <span className="text-xl font-black gradient-text">{formatINR(order.grandTotal || 0)}</span>
                 </div>
               </div>
             </div>

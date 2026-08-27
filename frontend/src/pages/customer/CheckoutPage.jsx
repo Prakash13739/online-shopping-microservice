@@ -8,6 +8,7 @@ import {
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { orderApi, userApi } from '../../api/api';
+import { formatINR } from '../../utils/currency';
 
 const DEFAULT_ADDRESS_FORM = {
   fullName: 'Jane Doe',
@@ -37,11 +38,10 @@ export default function CheckoutPage() {
 
   const items = cart.items || [];
   const subtotal = items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
-  const shipping = subtotal >= 100 || subtotal === 0 ? 0 : 15;
-  const discount = subtotal > 200 ? 20 : 0;
+  const shipping = subtotal >= 999 || subtotal === 0 ? 0 : 99;
+  const discount = subtotal > 2000 ? 250 : 0;
   const grandTotal = subtotal + shipping - discount;
 
-  // Load saved addresses for current user
   useEffect(() => {
     if (user?.id) {
       userApi.getAddresses(user.id).then((res) => {
@@ -62,7 +62,6 @@ export default function CheckoutPage() {
             addressType: def.addressType || 'HOME',
           });
         } else {
-          // Pre-fill user name and phone if available
           setAddressForm((prev) => ({
             ...prev,
             fullName: user.name || prev.fullName,
@@ -98,7 +97,6 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (items.length === 0) return;
 
-    // Validation
     if (!addressForm.fullName.trim() || !addressForm.phone.trim() || !addressForm.street.trim() || !addressForm.city.trim() || !addressForm.state.trim() || !addressForm.postalCode.trim()) {
       setErrorMessage('Please fill in all mandatory delivery address fields (Name, Phone, Street, City, State, PIN Code).');
       return;
@@ -108,7 +106,6 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Construct rich formatted delivery address string for order receipt
       const formattedAddress = [
         addressForm.fullName,
         `Phone: ${addressForm.phone}`,
@@ -135,7 +132,6 @@ export default function CheckoutPage() {
         })),
       };
 
-      // Optionally save to user address book if new
       if (saveToAccount && user?.id && selectedAddressId === 'custom') {
         userApi.addAddress(user.id, {
           ...addressForm,
@@ -192,7 +188,7 @@ export default function CheckoutPage() {
         {/* Form Sections (2 cols) */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* ════════════ 1. DELIVERY ADDRESS FORM ════════════ */}
+          {/* 1. DELIVERY ADDRESS FORM */}
           <div className="rounded-3xl p-6 sm:p-8 glass-card space-y-6">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
@@ -221,7 +217,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Saved Address Cards Carousel / Selector */}
+            {/* Saved Address Cards */}
             {savedAddresses.length > 0 && (
               <div className="space-y-2">
                 <label className="text-[11px] font-black uppercase tracking-wider text-slate-400">
@@ -314,7 +310,7 @@ export default function CheckoutPage() {
                   name="landmark"
                   value={addressForm.landmark}
                   onChange={handleAddressFieldChange}
-                  placeholder="e.g. Opposite Apollo Hospital / Near Metro Pillar 145"
+                  placeholder="e.g. Opposite Apollo Hospital / Near Metro Station"
                   className={inputClass}
                 />
               </div>
@@ -330,7 +326,7 @@ export default function CheckoutPage() {
                     name="city"
                     value={addressForm.city}
                     onChange={handleAddressFieldChange}
-                    placeholder="e.g. Bengaluru / Mumbai"
+                    placeholder="e.g. Bengaluru / Mumbai / Chennai"
                     className={inputClass}
                     required
                   />
@@ -362,7 +358,7 @@ export default function CheckoutPage() {
                     name="state"
                     value={addressForm.state}
                     onChange={handleAddressFieldChange}
-                    placeholder="e.g. Karnataka / Maharashtra"
+                    placeholder="e.g. Karnataka / Tamil Nadu / Maharashtra"
                     className={inputClass}
                     required
                   />
@@ -377,7 +373,7 @@ export default function CheckoutPage() {
                     name="postalCode"
                     value={addressForm.postalCode}
                     onChange={handleAddressFieldChange}
-                    placeholder="e.g. 560001 / 400001"
+                    placeholder="e.g. 560001 / 600001"
                     className={inputClass}
                     required
                   />
@@ -433,7 +429,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* ════════════ 2. PAYMENT OPTIONS ════════════ */}
+          {/* 2. PAYMENT OPTIONS */}
           <div className="rounded-3xl p-6 sm:p-8 glass-card space-y-6">
             <div className="flex items-center gap-2.5 pb-4 border-b border-white/10">
               <div className="w-8 h-8 rounded-xl bg-cyan-600/30 text-cyan-300 flex items-center justify-center font-bold">
@@ -486,7 +482,7 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        {/* ════════════ RIGHT COL: ORDER SUMMARY ════════════ */}
+        {/* RIGHT COL: ORDER SUMMARY */}
         <div className="lg:col-span-1 space-y-4">
           <div className="rounded-3xl p-6 glass-card space-y-6 sticky top-24">
             <h3 className="text-base font-black text-white">Order Summary ({items.length} items)</h3>
@@ -504,7 +500,7 @@ export default function CheckoutPage() {
                     <p className="font-bold text-white truncate">{item.productName}</p>
                     <p className="text-slate-400">Qty: {item.quantity}</p>
                   </div>
-                  <span className="font-black text-white">${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                  <span className="font-black text-white">{formatINR(item.unitPrice * item.quantity)}</span>
                 </div>
               ))}
             </div>
@@ -513,23 +509,23 @@ export default function CheckoutPage() {
             <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="font-bold text-white">${subtotal.toFixed(2)}</span>
+                <span className="font-bold text-white">{formatINR(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Shipping</span>
+                <span>Delivery Charges</span>
                 <span className="font-bold text-white">
-                  {shipping === 0 ? <strong className="text-emerald-400 font-bold">FREE</strong> : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? <strong className="text-emerald-400 font-bold">FREE</strong> : formatINR(shipping)}
                 </span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-emerald-400 font-bold">
                   <span>Special Discount</span>
-                  <span>-${discount.toFixed(2)}</span>
+                  <span>-{formatINR(discount)}</span>
                 </div>
               )}
               <div className="pt-3 border-t border-white/10 flex justify-between text-base font-black text-white">
-                <span>Total Due</span>
-                <span className="gradient-text text-lg font-black">${grandTotal.toFixed(2)}</span>
+                <span>Total Payable</span>
+                <span className="gradient-text text-lg font-black">{formatINR(grandTotal)}</span>
               </div>
             </div>
 
@@ -547,7 +543,7 @@ export default function CheckoutPage() {
                 </>
               ) : (
                 <>
-                  <span>Place Order (${grandTotal.toFixed(2)})</span>
+                  <span>Place Order ({formatINR(grandTotal)})</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

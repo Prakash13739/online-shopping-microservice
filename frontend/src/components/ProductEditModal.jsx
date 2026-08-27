@@ -276,7 +276,7 @@ export default function ProductEditModal({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1.5">
               <label className="text-[11px] font-black uppercase tracking-wider text-slate-300">
-                Regular Price ($) <span className="text-rose-400">*</span>
+                Regular Price (₹) <span className="text-rose-400">*</span>
               </label>
               <input
                 type="number"
@@ -285,7 +285,7 @@ export default function ProductEditModal({
                 name="price"
                 value={form.price}
                 onChange={handleChange}
-                placeholder="e.g. 299.99"
+                placeholder="e.g. 2999.00"
                 className={inputClass}
                 required
               />
@@ -293,7 +293,7 @@ export default function ProductEditModal({
 
             <div className="space-y-1.5">
               <label className="text-[11px] font-black uppercase tracking-wider text-slate-300">
-                Discount Price ($)
+                Discount Price (₹)
               </label>
               <input
                 type="number"
@@ -302,7 +302,7 @@ export default function ProductEditModal({
                 name="discountPrice"
                 value={form.discountPrice}
                 onChange={handleChange}
-                placeholder="e.g. 249.99 (Optional)"
+                placeholder="e.g. 2499.00 (Optional)"
                 className={inputClass}
               />
             </div>

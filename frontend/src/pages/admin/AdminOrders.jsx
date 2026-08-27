@@ -3,6 +3,7 @@ import { ShoppingCart, Eye, Edit, RefreshCw, X, Check, Search, MapPin, Calendar,
 import { orderApi } from '../../api/api';
 import AdminSidebar from '../../components/AdminSidebar';
 import StatusBadge from '../../components/StatusBadge';
+import { formatINR } from '../../utils/currency';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -19,13 +20,7 @@ export default function AdminOrders() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(val || 0);
-  };
+  const formatCurrency = formatINR;
 
   const fetchOrders = async () => {
     try {

@@ -4,6 +4,7 @@ import { ArrowLeft, Package, MapPin, CreditCard, Calendar, Truck, ShieldCheck, C
 import { orderApi, paymentApi } from '../../api/api';
 import OrderTimeline from '../../components/OrderTimeline';
 import StatusBadge from '../../components/StatusBadge';
+import { formatINR } from '../../utils/currency';
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -12,13 +13,7 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(val || 0);
-  };
+
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -129,12 +124,12 @@ export default function OrderDetailPage() {
                     <Link to={`/product/${item.productId}`} className="font-bold text-sm text-white hover:text-purple-300 transition-colors">
                       {item.productName}
                     </Link>
-                    <p className="text-xs text-slate-400 mt-0.5 font-semibold">Qty: {item.quantity} × {formatCurrency(item.unitPrice)}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 font-semibold">Qty: {item.quantity} × {formatINR(item.unitPrice)}</p>
                   </div>
                 </div>
 
                 <span className="text-sm font-black text-white">
-                  {formatCurrency(item.subtotal)}
+                  {formatINR(item.subtotal)}
                 </span>
               </div>
             ))}
@@ -144,23 +139,23 @@ export default function OrderDetailPage() {
           <div className="pt-6 border-t border-white/10 space-y-2.5 text-xs text-slate-300">
             <div className="flex justify-between">
               <span>Items Total</span>
-              <span className="font-bold text-white">{formatCurrency(order.totalAmount)}</span>
+              <span className="font-bold text-white">{formatINR(order.totalAmount)}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
               <span className="font-bold text-white">
-                {order.shippingAmount === 0 ? <strong className="text-emerald-400 font-bold">FREE</strong> : formatCurrency(order.shippingAmount)}
+                {order.shippingAmount === 0 ? <strong className="text-emerald-400 font-bold">FREE</strong> : formatINR(order.shippingAmount)}
               </span>
             </div>
             {order.discountAmount > 0 && (
               <div className="flex justify-between text-emerald-400 font-bold">
                 <span>Discount</span>
-                <span>-{formatCurrency(order.discountAmount)}</span>
+                <span>-{formatINR(order.discountAmount)}</span>
               </div>
             )}
             <div className="pt-3 border-t border-white/10 flex justify-between text-base font-black text-white">
               <span>Grand Total</span>
-              <span className="gradient-text text-xl font-black">{formatCurrency(order.grandTotal)}</span>
+              <span className="gradient-text text-xl font-black">{formatINR(order.grandTotal)}</span>
             </div>
           </div>
         </div>

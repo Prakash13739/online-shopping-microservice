@@ -5,6 +5,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, 
 import { orderApi, productApi, inventoryApi, authApi } from '../../api/api';
 import AdminSidebar from '../../components/AdminSidebar';
 import StatusBadge from '../../components/StatusBadge';
+import { formatINR } from '../../utils/currency';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -19,13 +20,7 @@ export default function AdminDashboard() {
   const [recentInventory, setRecentInventory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(val || 0);
-  };
+  const formatCurrency = formatINR;
 
   const fetchDashboardData = async () => {
     try {

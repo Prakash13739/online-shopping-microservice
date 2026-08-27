@@ -8,6 +8,7 @@ import { productApi, inventoryApi } from '../../api/api';
 import { useCart } from '../../context/CartContext';
 import StatusBadge from '../../components/StatusBadge';
 import ProductEditModal from '../../components/ProductEditModal';
+import { formatINR } from '../../utils/currency';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -131,7 +132,7 @@ export default function ProductDetailPage() {
             {hasDiscount && (
               <span className="absolute top-5 left-5 px-4 py-1.5 text-xs font-black text-white rounded-full shadow-xl"
                 style={{ background: 'linear-gradient(135deg, #ef4444, #f43f5e)' }}>
-                SAVE ${Math.round(product.price - product.discountPrice)}
+                SAVE {formatINR(product.price - product.discountPrice)}
               </span>
             )}
           </div>
@@ -174,16 +175,16 @@ export default function ProductDetailPage() {
             <div className="space-y-1">
               <div className="flex items-baseline gap-3">
                 <span className="text-3xl sm:text-4xl font-black text-white">
-                  ${hasDiscount ? product.discountPrice : product.price}
+                  {formatINR(hasDiscount ? product.discountPrice : product.price)}
                 </span>
                 {hasDiscount && (
                   <span className="text-lg text-slate-400 line-through">
-                    ${product.price}
+                    {formatINR(product.price)}
                   </span>
                 )}
               </div>
               <p className="text-xs text-emerald-400 font-semibold">
-                Free express shipping on all orders over $100
+                Free express delivery on all orders over ₹999
               </p>
             </div>
 
@@ -214,7 +215,7 @@ export default function ProductDetailPage() {
                   </button>
                 </div>
                 <span className="text-xs font-semibold text-slate-300">
-                  Total: <strong className="text-white font-black">${((hasDiscount ? product.discountPrice : product.price) * quantity).toFixed(2)}</strong>
+                  Total: <strong className="text-white font-black">{formatINR((hasDiscount ? product.discountPrice : product.price) * quantity)}</strong>
                 </span>
               </div>
             </div>

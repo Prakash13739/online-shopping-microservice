@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Trash2, ArrowRight, ShieldCheck, Truck, RotateCcw, Plus, Minus, ArrowLeft, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { formatINR } from '../../utils/currency';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, clearCart, loading } = useCart();
@@ -9,19 +10,10 @@ export default function CartPage() {
 
   const items = cart.items || [];
   const subtotal = items.reduce((acc, item) => acc + (item.unitPrice * item.quantity), 0);
-  const freeShippingThreshold = 100;
-  const shipping = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 15;
-  const discount = subtotal > 200 ? 20 : 0;
+  const freeShippingThreshold = 999;
+  const shipping = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 99;
+  const discount = subtotal > 2000 ? 250 : 0;
   const grandTotal = subtotal + shipping - discount;
-
-  // Currency helper
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
 
   if (items.length === 0 && !loading) {
     return (
@@ -89,7 +81,7 @@ export default function CartPage() {
                     {item.productName}
                   </Link>
                   <span className="text-xs text-slate-400 block mt-1 font-semibold">
-                    {formatCurrency(item.unitPrice)} each
+                    {formatINR(item.unitPrice)} each
                   </span>
                 </div>
               </div>
@@ -112,9 +104,9 @@ export default function CartPage() {
                   </button>
                 </div>
 
-                <div className="text-right min-w-[90px]">
+                <div className="text-right min-w-[100px]">
                   <span className="text-base sm:text-lg font-black text-white block">
-                    {formatCurrency(item.unitPrice * item.quantity)}
+                    {formatINR(item.unitPrice * item.quantity)}
                   </span>
                 </div>
 
@@ -145,32 +137,32 @@ export default function CartPage() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between text-slate-300">
                 <span>Subtotal</span>
-                <span className="font-bold text-white">{formatCurrency(subtotal)}</span>
+                <span className="font-bold text-white">{formatINR(subtotal)}</span>
               </div>
 
               <div className="flex items-center justify-between text-slate-300">
-                <span>Estimated Shipping</span>
+                <span>Estimated Delivery</span>
                 <span className="font-bold text-white">
-                  {shipping === 0 ? <strong className="text-emerald-400 font-black">FREE</strong> : formatCurrency(shipping)}
+                  {shipping === 0 ? <strong className="text-emerald-400 font-black">FREE</strong> : formatINR(shipping)}
                 </span>
               </div>
 
               {discount > 0 && (
                 <div className="flex items-center justify-between text-emerald-400 font-bold">
-                  <span>Special Promo Discount</span>
-                  <span>-{formatCurrency(discount)}</span>
+                  <span>Special Discount</span>
+                  <span>-{formatINR(discount)}</span>
                 </div>
               )}
 
               <div className="pt-4 border-t border-white/10 flex items-baseline justify-between text-white">
                 <span className="text-base font-bold">Total Amount</span>
-                <span className="text-2xl font-black gradient-text">{formatCurrency(grandTotal)}</span>
+                <span className="text-2xl font-black gradient-text">{formatINR(grandTotal)}</span>
               </div>
             </div>
 
             {subtotal < freeShippingThreshold && (
               <div className="p-3.5 rounded-2xl glass text-xs text-slate-300 font-medium">
-                Add <strong className="text-white">{formatCurrency(freeShippingThreshold - subtotal)}</strong> more to unlock <strong className="text-emerald-400">Free Express Shipping</strong>!
+                Add <strong className="text-white">{formatINR(freeShippingThreshold - subtotal)}</strong> more to unlock <strong className="text-emerald-400">Free Express Delivery</strong>!
               </div>
             )}
 
@@ -178,7 +170,7 @@ export default function CartPage() {
               onClick={() => navigate('/checkout')}
               className="w-full py-4 rounded-2xl text-sm font-black text-white btn-primary flex items-center justify-center gap-2 shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
             >
-              Proceed to Checkout <ArrowRight className="w-4 h-4" />
+              Proceed to Checkout ({formatINR(grandTotal)}) <ArrowRight className="w-4 h-4" />
             </button>
 
             <div className="pt-1 text-center text-xs text-slate-400">

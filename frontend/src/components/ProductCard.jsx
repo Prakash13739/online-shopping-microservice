@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, ShoppingCart, Check, Eye } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { formatINR } from '../utils/currency';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -94,12 +95,12 @@ export default function ProductCard({ product }) {
         <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-lg sm:text-xl font-black text-white">
-                ${hasDiscount ? product.discountPrice : product.price}
+              <span className="text-base sm:text-lg font-black text-white">
+                {formatINR(hasDiscount ? product.discountPrice : product.price)}
               </span>
               {hasDiscount && (
                 <span className="text-xs text-slate-400 line-through">
-                  ${product.price}
+                  {formatINR(product.price)}
                 </span>
               )}
             </div>

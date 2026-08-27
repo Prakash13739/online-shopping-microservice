@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Filter, SlidersHorizontal, Search, ChevronLeft, ChevronRight, X, Sparkles } from 'lucide-react';
+import { Filter, SlidersHorizontal, Search, ChevronLeft, ChevronRight, X, Plus, Sparkles, Edit2 } from 'lucide-react';
 import { productApi } from '../../api/api';
 import ProductCard from '../../components/ProductCard';
+import ProductEditModal from '../../components/ProductEditModal';
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,6 +12,10 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+
+  // Modal State for Add / Edit
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Filters state
   const currentPage = parseInt(searchParams.get('page') || '0', 10);
@@ -21,39 +26,45 @@ export default function ProductsPage() {
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
 
-  useEffect(() => {
-    productApi.getCategories().then((res) => {
+  const fetchCategories = async () => {
+    try {
+      const res = await productApi.getCategories();
       if (res?.data) setCategories(res.data);
-    });
+    } catch (_) {}
+  };
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        page: currentPage,
+        size: 12,
+        categoryId: selectedCategory || undefined,
+        search: searchKeyword || undefined,
+        minPrice: minPrice || undefined,
+        maxPrice: maxPrice || undefined,
+        sortBy,
+        sortDir,
+      };
+
+      const res = await productApi.getProducts(params);
+      if (res?.data) {
+        setProducts(res.data.content || []);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalElements(res.data.totalElements || 0);
+      }
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const params = {
-          page: currentPage,
-          size: 12,
-          categoryId: selectedCategory || undefined,
-          search: searchKeyword || undefined,
-          minPrice: minPrice || undefined,
-          maxPrice: maxPrice || undefined,
-          sortBy,
-          sortDir,
-        };
-
-        const res = await productApi.getProducts(params);
-        if (res?.data) {
-          setProducts(res.data.content || []);
-          setTotalPages(res.data.totalPages || 1);
-          setTotalElements(res.data.totalElements || 0);
-        }
-      } catch (err) {
-        console.error('Failed to fetch products:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProducts();
   }, [currentPage, selectedCategory, searchKeyword, sortBy, sortDir, searchParams]);
 
@@ -83,6 +94,16 @@ export default function ProductsPage() {
     setSearchParams(new URLSearchParams());
   };
 
+  const handleOpenAdd = () => {
+    setSelectedProduct(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (p) => {
+    setSelectedProduct(p);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
@@ -101,26 +122,38 @@ export default function ProductsPage() {
           </p>
         </div>
 
-        {/* Sort Controls */}
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-bold text-slate-400 whitespace-nowrap">Sort By:</label>
-          <select
-            value={`${sortBy}_${sortDir}`}
-            onChange={(e) => {
-              const [field, dir] = e.target.value.split('_');
-              const next = new URLSearchParams(searchParams);
-              next.set('sortBy', field);
-              next.set('sortDir', dir);
-              setSearchParams(next);
-            }}
-            className="text-xs font-bold rounded-2xl px-4 py-2.5 glass focus:outline-none"
+        {/* Action Controls: Add Product + Sort By */}
+        <div className="flex flex-wrap items-center gap-3">
+          
+          {/* ➕ Add Product Button right in Catalog Header */}
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black text-white btn-primary shadow-lg hover:scale-105 active:scale-95 transition-all"
           >
-            <option value="createdAt_desc">Newest Arrivals</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="rating_desc">Highest Rated</option>
-            <option value="name_asc">Name: A to Z</option>
-          </select>
+            <Plus className="w-4 h-4" /> Add Product to Catalog
+          </button>
+
+          {/* Sort Controls */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-bold text-slate-400 whitespace-nowrap hidden sm:inline">Sort By:</label>
+            <select
+              value={`${sortBy}_${sortDir}`}
+              onChange={(e) => {
+                const [field, dir] = e.target.value.split('_');
+                const next = new URLSearchParams(searchParams);
+                next.set('sortBy', field);
+                next.set('sortDir', dir);
+                setSearchParams(next);
+              }}
+              className="text-xs font-bold rounded-2xl px-4 py-2.5 glass focus:outline-none"
+            >
+              <option value="createdAt_desc">Newest Arrivals</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating_desc">Highest Rated</option>
+              <option value="name_asc">Name: A to Z</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -228,19 +261,38 @@ export default function ProductsPage() {
               <Search className="w-14 h-14 text-slate-500 mx-auto" />
               <h3 className="text-xl font-black text-white">No products found</h3>
               <p className="text-xs text-slate-400 max-w-sm mx-auto font-medium">
-                Try adjusting your price range or exploring different categories.
+                Try adjusting your price range, search query, or add a new custom product.
               </p>
-              <button
-                onClick={clearAllFilters}
-                className="px-6 py-2.5 rounded-xl text-xs font-black text-white btn-primary inline-block"
-              >
-                Clear Filters
-              </button>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={clearAllFilters}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold glass btn-glass"
+                >
+                  Clear Filters
+                </button>
+                <button
+                  onClick={handleOpenAdd}
+                  className="px-6 py-2.5 rounded-xl text-xs font-black text-white btn-primary inline-block"
+                >
+                  ➕ Add New Product
+                </button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <div key={p.id} className="relative group">
+                  <ProductCard product={p} />
+                  
+                  {/* Quick Edit Overlay Button */}
+                  <button
+                    onClick={() => handleOpenEdit(p)}
+                    className="absolute top-3 right-3 p-2 rounded-xl text-xs font-bold glass glass-hover text-purple-300 shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    title="Edit Product"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               ))}
             </div>
           )}
@@ -286,6 +338,17 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
+
+      {/* ➕ / ✏️ Live Product Add & Edit Modal */}
+      <ProductEditModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        product={selectedProduct}
+        onSaved={() => {
+          fetchProducts();
+          fetchCategories();
+        }}
+      />
     </div>
   );
 }

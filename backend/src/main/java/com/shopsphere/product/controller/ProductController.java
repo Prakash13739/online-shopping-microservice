@@ -69,6 +69,8 @@ public class ProductController {
         if (product.getSlug() == null || product.getSlug().isBlank()) {
             product.setSlug(product.getName().toLowerCase().replaceAll("[^a-z0-9]+", "-"));
         }
+        if (product.getRating() == null) product.setRating(4.8);
+        if (product.getReviewCount() == null) product.setReviewCount(120);
         Product saved = productRepository.save(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Product created", saved));
     }
@@ -85,7 +87,12 @@ public class ProductController {
                     if (updates.getImageUrl() != null) p.setImageUrl(updates.getImageUrl());
                     if (updates.getStatus() != null) p.setStatus(updates.getStatus());
                     if (updates.getBrand() != null) p.setBrand(updates.getBrand());
-                    return ResponseEntity.ok(ApiResponse.success("Product updated", productRepository.save(p)));
+                    if (updates.getSku() != null) p.setSku(updates.getSku());
+                    if (updates.getRating() != null) p.setRating(updates.getRating());
+                    if (updates.getReviewCount() != null) p.setReviewCount(updates.getReviewCount());
+                    Product saved = productRepository.save(p);
+                    categoryRepository.findById(saved.getCategoryId()).ifPresent(c -> saved.setCategoryName(c.getName()));
+                    return ResponseEntity.ok(ApiResponse.success("Product updated successfully", saved));
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(ApiResponse.error("Product not found", "PRODUCT_NOT_FOUND")));

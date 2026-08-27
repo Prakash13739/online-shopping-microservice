@@ -1,0 +1,24 @@
+USE shopsphere_payment;
+
+DROP TABLE IF EXISTS payments;
+
+CREATE TABLE payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL,
+    payment_method VARCHAR(30) NOT NULL,
+    transaction_id VARCHAR(64) NOT NULL UNIQUE,
+    status VARCHAR(20) NOT NULL DEFAULT 'SUCCESS',
+    error_message VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Payment records for historical orders
+INSERT INTO payments (id, order_id, user_id, amount, payment_method, transaction_id, status, created_at) VALUES
+(1, 1, 2, 1699.00, 'CARD', 'TXN-902148192834-VISA', 'SUCCESS', DATE_SUB(NOW(), INTERVAL 15 DAY)),
+(2, 2, 2, 339.97, 'UPI', 'TXN-719284719203-UPI', 'SUCCESS', DATE_SUB(NOW(), INTERVAL 10 DAY)),
+(3, 3, 2, 694.00, 'CARD', 'TXN-551029384756-MC', 'SUCCESS', DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(4, 4, 2, 149.99, 'NET_BANKING', 'TXN-109283746582-HDFC', 'SUCCESS', DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(5, 5, 2, 899.00, 'UPI', 'TXN-882910394857-UPI', 'SUCCESS', NOW());

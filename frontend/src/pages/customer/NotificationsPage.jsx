@@ -1,28 +1,28 @@
 import React from 'react';
-import { Bell, CheckCheck, Package, CreditCard, Clock, CheckCircle } from 'lucide-react';
+import { Bell, CheckCheck, Package, Sparkles } from 'lucide-react';
 import { useNotifications } from '../../context/NotificationContext';
 
 export default function NotificationsPage() {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 flex items-center gap-2">
-            <Bell className="w-7 h-7 text-brand-600" /> Notifications Feed
+          <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+            <Bell className="w-8 h-8 text-purple-400" /> Notifications Feed
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Real-time in-app alerts from <strong className="text-slate-800">Notification Service (:8088)</strong>
+          <p className="text-xs text-slate-400 mt-1 font-medium">
+            Real-time delivery alerts, order status updates, and promotional notifications
           </p>
         </div>
 
         {unreadCount > 0 && (
           <button
             onClick={markAllAsRead}
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-xl text-xs font-bold transition-colors self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black text-white btn-primary self-start sm:self-auto shadow-md"
           >
             <CheckCheck className="w-4 h-4" /> Mark All as Read
           </button>
@@ -30,10 +30,10 @@ export default function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
-          <Bell className="w-12 h-12 text-slate-300 mx-auto" />
-          <h3 className="text-lg font-bold text-slate-800">No Notifications</h3>
-          <p className="text-xs text-slate-500">You are all caught up with orders and alerts.</p>
+        <div className="rounded-4xl p-16 text-center glass-card space-y-3">
+          <Bell className="w-14 h-14 text-slate-500 mx-auto" />
+          <h3 className="text-lg font-black text-white">No Notifications</h3>
+          <p className="text-xs text-slate-400 font-medium">You are all caught up with your orders and updates.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -41,29 +41,29 @@ export default function NotificationsPage() {
             <div
               key={notif.id}
               onClick={() => !notif.isRead && markAsRead(notif.id)}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all flex items-start justify-between gap-4 cursor-pointer ${
+              className={`p-5 rounded-3xl transition-all flex items-start justify-between gap-4 cursor-pointer ${
                 notif.isRead
-                  ? 'bg-white border-slate-200 opacity-80'
-                  : 'bg-brand-50/40 border-brand-200 shadow-sm ring-1 ring-brand-500/10'
+                  ? 'glass opacity-70'
+                  : 'glass-card border-purple-500/40 bg-purple-950/20 shadow-lg'
               }`}
             >
-              <div className="flex items-start gap-3.5">
+              <div className="flex items-start gap-4">
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                    notif.isRead ? 'bg-slate-100 text-slate-600' : 'bg-brand-600 text-white'
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                    notif.isRead ? 'glass text-slate-400' : 'bg-purple-600 text-white shadow-md'
                   }`}
                 >
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-slate-900">{notif.title}</h4>
+                    <h4 className="text-sm font-black text-white">{notif.title}</h4>
                     {!notif.isRead && (
-                      <span className="w-2 h-2 rounded-full bg-brand-600 flex-shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse flex-shrink-0" />
                     )}
                   </div>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">{notif.message}</p>
-                  <span className="text-[10px] text-slate-400 block mt-2">
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed font-medium">{notif.message}</p>
+                  <span className="text-[10px] text-slate-500 block mt-2 font-mono">
                     {new Date(notif.createdAt).toLocaleString()}
                   </span>
                 </div>
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
                     e.stopPropagation();
                     markAsRead(notif.id);
                   }}
-                  className="text-xs font-semibold text-brand-600 hover:text-brand-700 whitespace-nowrap"
+                  className="text-xs font-bold text-purple-300 hover:text-white whitespace-nowrap"
                 >
                   Mark read
                 </button>

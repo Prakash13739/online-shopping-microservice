@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, TrendingUp, Zap, ShieldCheck, Truck, RotateCcw, Star, ChevronRight } from 'lucide-react';
+import { ArrowRight, Sparkles, TrendingUp, Zap, ShieldCheck, Truck, RotateCcw, Star, ChevronRight, Gem } from 'lucide-react';
 import { productApi } from '../../api/api';
 import ProductCard from '../../components/ProductCard';
 
@@ -37,40 +37,44 @@ export default function HomePage() {
     <div className="space-y-16 pb-20">
       
       {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-3xl bg-slate-950 text-white p-8 sm:p-14 lg:p-20 border border-slate-900 shadow-2xl mx-4 sm:mx-6 lg:mx-8 mt-6">
+      <section className="relative overflow-hidden rounded-4xl glass-card text-white p-8 sm:p-14 lg:p-20 border border-white/10 shadow-2xl mx-4 sm:mx-6 lg:mx-8 mt-6"
+        style={{
+          background: 'linear-gradient(135deg, rgba(15,15,35,0.9), rgba(10,10,26,0.95))',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.6), 0 0 50px rgba(124,58,237,0.15)',
+        }}>
         
         {/* Ambient Gradient Glows */}
-        <div className="absolute -top-32 -right-32 w-[32rem] h-[32rem] bg-brand-500/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-[32rem] h-[32rem] bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-[32rem] h-[32rem] bg-purple-600/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-[32rem] h-[32rem] bg-cyan-500/20 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 max-w-2xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-slate-200 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> New Season Collection 2026
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/15 text-slate-200 text-xs font-bold">
+            <Gem className="w-3.5 h-3.5 text-purple-400" /> NexaMart Luxury Collection 2026
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1]">
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] text-white">
             Curated Essentials. <br />
-            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+            <span className="gradient-text">
               Elevated Living.
             </span>
           </h1>
 
-          <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-lg">
-            Discover precision-engineered tech, designer apparel, and lifestyle products curated for quality and durability.
+          <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-lg font-medium">
+            Discover precision-engineered electronics, luxury fashion apparel, smart home systems, and lifestyle essentials.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-sm bg-white text-slate-950 hover:bg-slate-100 transition-all shadow-lg active:scale-95"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-black text-sm text-white btn-primary shadow-xl hover:scale-105 active:scale-95 transition-all"
             >
-              Shop Collection <ArrowRight className="w-4 h-4" />
+              Shop All Products <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               to="/products?categoryId=1"
-              className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl font-semibold text-sm bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl font-bold text-sm text-white glass glass-hover transition-all"
             >
-              Browse Electronics
+              Explore Electronics
             </Link>
           </div>
         </div>
@@ -78,14 +82,14 @@ export default function HomePage() {
 
       {/* Categories Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Featured Categories</h2>
-            <p className="text-sm text-slate-500 mt-1">Explore our wide selection of departments</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">Featured Departments</h2>
+            <p className="text-xs text-slate-400 mt-1 font-medium">Browse our curated collection of shopping categories</p>
           </div>
           <Link
             to="/products"
-            className="text-sm font-bold text-slate-900 hover:text-brand-600 inline-flex items-center gap-1 transition-colors"
+            className="text-xs font-bold text-purple-400 hover:text-purple-300 inline-flex items-center gap-1 transition-colors"
           >
             All Categories <ChevronRight className="w-4 h-4" />
           </Link>
@@ -96,15 +100,15 @@ export default function HomePage() {
             <Link
               key={cat.id}
               to={`/products?categoryId=${cat.id}`}
-              className="group p-4 bg-white rounded-2xl border border-slate-200/80 hover:border-slate-400 hover:shadow-md transition-all text-center flex flex-col items-center justify-between"
+              className="group p-4 rounded-3xl glass-card hover:border-purple-500/40 hover:scale-105 transition-all text-center flex flex-col items-center justify-between"
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden mb-3 bg-slate-100 p-0.5 border border-slate-200 group-hover:scale-105 transition-transform">
+              <div className="w-16 h-16 rounded-full overflow-hidden mb-3 bg-slate-900 p-0.5 border border-white/15 group-hover:scale-110 transition-transform shadow-md">
                 <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover rounded-full" />
               </div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-brand-600 transition-colors line-clamp-1">
+              <h3 className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors line-clamp-1">
                 {cat.name}
               </h3>
-              <span className="text-[11px] text-slate-400 font-medium mt-0.5">
+              <span className="text-[10px] text-slate-400 font-semibold mt-0.5">
                 {cat.productCount || 4} Items
               </span>
             </Link>
@@ -114,26 +118,26 @@ export default function HomePage() {
 
       {/* Featured / Best Sellers */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Top Rated Products</h2>
-            <p className="text-sm text-slate-500 mt-1">Customer favorites and bestselling items</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">Top Rated Products</h2>
+            <p className="text-xs text-slate-400 mt-1 font-medium">Customer favorites and bestselling items in stock</p>
           </div>
           <Link
             to="/products"
-            className="text-sm font-bold text-slate-900 hover:text-brand-600 inline-flex items-center gap-1 transition-colors"
+            className="text-xs font-bold text-purple-400 hover:text-purple-300 inline-flex items-center gap-1 transition-colors"
           >
-            View All <ChevronRight className="w-4 h-4" />
+            View All ({featuredProducts.length}) <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-slate-200 animate-pulse space-y-3">
-                <div className="aspect-square bg-slate-100 rounded-xl" />
-                <div className="h-4 bg-slate-100 rounded w-3/4" />
-                <div className="h-4 bg-slate-100 rounded w-1/2" />
+              <div key={i} className="rounded-3xl p-5 glass-card animate-pulse space-y-4">
+                <div className="aspect-square bg-white/5 rounded-2xl" />
+                <div className="h-4 bg-white/10 rounded-full w-3/4" />
+                <div className="h-4 bg-white/10 rounded-full w-1/2" />
               </div>
             ))}
           </div>
@@ -148,19 +152,20 @@ export default function HomePage() {
 
       {/* Promo Offer Card */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 text-white rounded-3xl p-8 sm:p-12 border border-slate-800 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="rounded-4xl p-8 sm:p-12 glass-card text-white border border-purple-500/30 flex flex-col md:flex-row items-center justify-between gap-8"
+          style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.25), rgba(6,182,212,0.15))' }}>
           <div className="space-y-3 max-w-lg text-center md:text-left">
-            <span className="text-xs font-bold uppercase tracking-widest text-brand-400">Special Promo</span>
-            <h3 className="text-2xl sm:text-4xl font-extrabold">Enjoy Up to 20% Off Electronics</h3>
-            <p className="text-sm text-slate-400">
-              Upgrade your workstation and audio gear with exclusive discounts on select premium models.
+            <span className="text-xs font-black uppercase tracking-widest text-purple-300">Seasonal Privilege</span>
+            <h3 className="text-2xl sm:text-4xl font-black text-white">Save Up to 20% on Flagship Electronics</h3>
+            <p className="text-xs text-slate-300 font-medium">
+              Upgrade your workstation, audio gear, and wearables with exclusive deals on select NexaMart models.
             </p>
           </div>
           <Link
             to="/products?categoryId=1"
-            className="px-8 py-4 bg-white text-slate-950 font-bold text-sm rounded-2xl hover:bg-slate-100 transition-all shadow-md flex-shrink-0"
+            className="px-8 py-4 rounded-2xl text-white font-black text-sm btn-primary shadow-xl hover:scale-105 active:scale-95 transition-all flex-shrink-0"
           >
-            Explore Deals
+            Explore Deals <ArrowRight className="w-4 h-4 inline ml-1" />
           </Link>
         </div>
       </section>

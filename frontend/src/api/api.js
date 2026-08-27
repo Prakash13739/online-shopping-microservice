@@ -7,6 +7,15 @@ export const authApi = {
   getAllUsers: () => axiosClient.get('/api/auth/users'),
 };
 
+export const userApi = {
+  getProfile: (userId) => axiosClient.get(`/api/users/${userId}`),
+  updateProfile: (userId, data) => axiosClient.put(`/api/users/${userId}`, data),
+  getAddresses: (userId) => axiosClient.get(`/api/users/${userId}/addresses`),
+  addAddress: (userId, address) => axiosClient.post(`/api/users/${userId}/addresses`, address),
+  updateAddress: (userId, addressId, address) => axiosClient.put(`/api/users/${userId}/addresses/${addressId}`, address),
+  deleteAddress: (userId, addressId) => axiosClient.delete(`/api/users/${userId}/addresses/${addressId}`),
+};
+
 export const productApi = {
   getProducts: (params) => axiosClient.get('/api/products', { params }),
   getProductById: (id) => axiosClient.get(`/api/products/${id}`),
@@ -83,5 +92,5 @@ export const healthApi = {
         lastChecked: new Date().toLocaleTimeString(),
       };
     }
-  }
+  },
 };

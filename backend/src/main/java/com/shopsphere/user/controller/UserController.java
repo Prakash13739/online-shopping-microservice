@@ -25,7 +25,7 @@ public class UserController {
     private AddressRepository addressRepository;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserProfile>> getUserById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<UserProfile>> getUserById(@PathVariable(value = "id") Long id) {
         return userProfileRepository.findByAuthUserId(id)
                 .map(u -> ResponseEntity.ok(ApiResponse.success("User profile found", u)))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserProfile>> updateUser(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<UserProfile>> updateUser(@PathVariable(value = "id") Long id,
                                                                @RequestBody Map<String, String> updates) {
         Optional<UserProfile> opt = userProfileRepository.findByAuthUserId(id);
         if (opt.isEmpty()) {
@@ -68,25 +68,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}/addresses")
-    public ResponseEntity<ApiResponse<List<Address>>> getAddresses(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<List<Address>>> getAddresses(@PathVariable(value = "id") Long id) {
         Optional<UserProfile> profile = userProfileRepository.findByAuthUserId(id);
-        if (profile.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("User not found", "USER_NOT_FOUND"));
-        }
-        List<Address> addresses = addressRepository.findByUserId(profile.get().getId());
+        Long profileId = profile.map(UserProfile::getId).orElse(id);
+        List<Address> addresses = addressRepository.findByUserId(profileId);
         return ResponseEntity.ok(ApiResponse.success("Addresses retrieved", addresses));
     }
 
     @PostMapping("/{id}/addresses")
-    public ResponseEntity<ApiResponse<Address>> addAddress(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<Address>> addAddress(@PathVariable(value = "id") Long id,
                                                             @RequestBody Address address) {
         Optional<UserProfile> profile = userProfileRepository.findByAuthUserId(id);
-        if (profile.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("User not found", "USER_NOT_FOUND"));
-        }
-        Long profileId = profile.get().getId();
+        Long profileId = profile.map(UserProfile::getId).orElse(id);
         address.setUserId(profileId);
         if (Boolean.TRUE.equals(address.getIsDefault())) {
             addressRepository.findByUserIdAndIsDefaultTrue(profileId)
@@ -97,22 +90,24 @@ public class UserController {
     }
 
     @PutMapping("/{id}/addresses/{addressId}")
-    public ResponseEntity<ApiResponse<Address>> updateAddress(@PathVariable Long id,
-                                                               @PathVariable Long addressId,
+    public ResponseEntity<ApiResponse<Address>> updateAddress(@PathVariable(value = "id") Long id,
+                                                               @PathVariable(value = "addressId") Long addressId,
                                                                @RequestBody Address updated) {
         Optional<UserProfile> profile = userProfileRepository.findByAuthUserId(id);
-        if (profile.isEmpty()) return ResponseEntity.status(404).body(ApiResponse.error("User not found", "USER_NOT_FOUND"));
-        Long profileId = profile.get().getId();
+        Long profileId = profile.map(UserProfile::getId).orElse(id);
         Optional<Address> existing = addressRepository.findByIdAndUserId(addressId, profileId);
         if (existing.isEmpty()) return ResponseEntity.status(404).body(ApiResponse.error("Address not found", "ADDRESS_NOT_FOUND"));
         Address addr = existing.get();
         if (updated.getFullName() != null) addr.setFullName(updated.getFullName());
         if (updated.getPhone() != null) addr.setPhone(updated.getPhone());
         if (updated.getStreet() != null) addr.setStreet(updated.getStreet());
+        if (updated.getLandmark() != null) addr.setLandmark(updated.getLandmark());
         if (updated.getCity() != null) addr.setCity(updated.getCity());
+        if (updated.getDistrict() != null) addr.setDistrict(updated.getDistrict());
         if (updated.getState() != null) addr.setState(updated.getState());
         if (updated.getPostalCode() != null) addr.setPostalCode(updated.getPostalCode());
         if (updated.getCountry() != null) addr.setCountry(updated.getCountry());
+        if (updated.getAddressType() != null) addr.setAddressType(updated.getAddressType());
         if (updated.getIsDefault() != null) {
             if (Boolean.TRUE.equals(updated.getIsDefault())) {
                 addressRepository.findByUserIdAndIsDefaultTrue(profileId)
@@ -124,11 +119,11 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}/addresses/{addressId}")
-    public ResponseEntity<ApiResponse<Void>> deleteAddress(@PathVariable Long id,
-                                                            @PathVariable Long addressId) {
+    public ResponseEntity<ApiResponse<Void>> deleteAddress(@PathVariable(value = "id") Long id,
+                                                            @PathVariable(value = "addressId") Long addressId) {
         Optional<UserProfile> profile = userProfileRepository.findByAuthUserId(id);
-        if (profile.isEmpty()) return ResponseEntity.status(404).body(ApiResponse.error("User not found", "USER_NOT_FOUND"));
-        Optional<Address> addr = addressRepository.findByIdAndUserId(addressId, profile.get().getId());
+        Long profileId = profile.map(UserProfile::getId).orElse(id);
+        Optional<Address> addr = addressRepository.findByIdAndUserId(addressId, profileId);
         if (addr.isEmpty()) return ResponseEntity.status(404).body(ApiResponse.error("Address not found", "ADDRESS_NOT_FOUND"));
         addressRepository.delete(addr.get());
         return ResponseEntity.ok(ApiResponse.success("Address deleted", null));
